@@ -19,6 +19,7 @@ export default class App extends React.Component {
     super(props);
 
     this.state = {
+      username: '',
       email: '',
       password: ''
     };
@@ -32,7 +33,7 @@ export default class App extends React.Component {
     })
   }
 
-  signupUser = (email, password) => {
+  signupUser = (email, password, username) => {
     try {
       if (this.state.password.length <= 6) {
         alert('Please enter at least 6 characters.')
@@ -40,8 +41,25 @@ export default class App extends React.Component {
       }
       firebase.auth().createUserWithEmailAndPassword(email, password)
       .then(user => {
-        alert('Create account successful!')
-        console.log(user)
+        const userInfo = firebase.auth().currentUser;
+        if (userInfo) {
+          // User sign up successful.
+          const { username } = this.state;
+          user.updateProfile({
+            displayName: username
+          }).then(function() {
+            alert(user.displayName)
+          }, function(error) {
+            alert(error.toString())
+            return;
+          });
+          console.log(user)
+        } else {
+          // No user is signed in.
+          alert(e.toString())
+          return;
+        }
+        //console.log(user)
       }, error => {
         alert(error.toString())
         return;
@@ -56,7 +74,15 @@ export default class App extends React.Component {
     try {
       firebase.auth().signInWithEmailAndPassword(email, password)
       .then(user => {
-        alert(user.email)
+        const userInfo = firebase.auth().currentUser;
+        if (userInfo) {
+          // User is signed in.
+          alert(user.displayName)
+        } else {
+          // No user is signed in.
+          alert(e.toString())
+          return;
+        }
         console.log(user)
       }, error => {
         alert(error.toString())
@@ -71,6 +97,8 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <FormLabel>Username</FormLabel>
+        <FormInput onChangeText={username => this.setState({username})}/>
         <FormLabel>Email</FormLabel>
         <FormInput onChangeText={email => this.setState({email})}/>
         <FormLabel>Password</FormLabel>
