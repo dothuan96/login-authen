@@ -56,7 +56,7 @@ export default class App extends React.Component {
     try {
       firebase.auth().signInWithEmailAndPassword(email, password)
       .then(user => {
-        alert(user)
+        alert(user.email)
         console.log(user)
       }, error => {
         alert(error.toString())
